@@ -139,13 +139,13 @@ linters-settings:
       - rangeValCopy
   gofumpt:
     # Module path which contains the source code being formatted.
-    module-path: github.com/yusupovanton/go-service-template
+    module-path: github.com/yusupovanton/words-of-wisdom-POW
     # Choose whether to use the extra rules.
     extra-rules: true
   goimports:
     # A comma-separated list of prefixes, which, if set, checks import paths
     # with the given prefixes are grouped after 3rd-party packages.
-    local-prefixes:  github.com/yusupovanton/go-service-template
+    local-prefixes:  github.com/yusupovanton/words-of-wisdom-POW
   gosec:
     excludes:
       - G307

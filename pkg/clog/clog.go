@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/yusupovanton/go-service-template/internal/config"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/config"
 )
 
 func NewCustomLogger(cfg config.Config) CLog {

@@ -8,8 +8,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	"github.com/yusupovanton/go-service-template/internal/di"
-	"github.com/yusupovanton/go-service-template/pkg/metrics"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/di"
 )
 
 const (
@@ -30,9 +29,8 @@ func run() int {
 	c := di.NewContainer(ctx)
 	defer c.Close()
 
-	cfg := c.GetConfig()
 	logger := c.GetLogger()
-	metricRegistry := c.GetMetricsRegistry()
+	server := c.GetServer()
 
 	defer func() {
 		if panicErr := recover(); panicErr != nil {
@@ -41,22 +39,11 @@ func run() int {
 		}
 	}()
 
-	metricsServer := metrics.NewServer(logger, cfg, metricRegistry, metrics.NewHealthChecker(logger))
-	defer func() {
-		err = metricsServer.Stop(ctx)
-		if err != nil {
-			logger.ErrorCtx(ctx, err, "failed to stop metrics server")
-		}
-	}()
-
 	go func() {
-		metricsServer.Start(ctx)
-	}()
-
-	dbPool := c.GetPostgres()
-	defer func() {
-		dbPool.Close()
-		logger.InfoCtx(ctx, "stopped database connection gracefully")
+		if err = server.Run(ctx); err != nil {
+			logger.ErrorCtx(ctx, err, "server encountered an error")
+			cancel()
+		}
 	}()
 
 	blockUntilContextCancelled(ctx)

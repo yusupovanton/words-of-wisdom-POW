@@ -8,17 +8,15 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: case_tracker
+      POSTGRES_DB: words_of_wisdom_POW
     networks:
-      - surge-signal-network
+      - words-of-wisdom-POW-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
 networks:
-  case-tracker-network:
-    driver: bridge
+  words-of-wisdom-POW-network:
     external: true
-    attachable: true
 
 volumes:
   postgres_data:

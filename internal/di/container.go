@@ -4,12 +4,13 @@ import (
 	"context"
 	"sync"
 
-	"github.com/jackc/pgx/v4/pgxpool"
-
-	"github.com/yusupovanton/go-service-template/internal/config"
-	"github.com/yusupovanton/go-service-template/pkg/clog"
-	"github.com/yusupovanton/go-service-template/pkg/metrics"
-	"github.com/yusupovanton/go-service-template/pkg/postgres"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/config"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/handlers"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/repository"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/server"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/usecase"
+	"github.com/yusupovanton/words-of-wisdom-POW/pkg/clog"
+	"github.com/yusupovanton/words-of-wisdom-POW/pkg/metrics"
 )
 
 type Container struct {
@@ -19,7 +20,11 @@ type Container struct {
 
 	metricsServer metrics.Server
 	registry      metrics.Registry
-	dbPool        *pgxpool.Pool
+
+	repo    *repository.Repository
+	useCase *usecase.UseCase
+	handler *handlers.GetQuoteHandler
+	server  *server.Server
 
 	closeFns []func()
 }
@@ -39,7 +44,6 @@ func NewContainer(ctx context.Context) *Container {
 }
 
 func (c *Container) GetConfig() config.Config {
-	//nolint:gocritic
 	return get(&c.cfg, func() config.Config {
 		return config.MustNew()
 	})
@@ -59,24 +63,47 @@ func (c *Container) GetMetricsRegistry() metrics.Registry {
 
 func (c *Container) GetMetricsServer() metrics.Server {
 	return get(&c.metricsServer, func() metrics.Server {
-		server := metrics.NewServer(c.GetLogger(), c.GetConfig(), c.GetMetricsRegistry(), metrics.NewHealthChecker(c.GetLogger()))
+		mSrv := metrics.NewServer(c.GetLogger(), c.GetConfig(), c.GetMetricsRegistry(), metrics.NewHealthChecker(c.GetLogger()))
 		c.addCloseFn(func() {
-			if err := server.Stop(c.ctx); err != nil {
+			if err := mSrv.Stop(c.ctx); err != nil {
 				c.GetLogger().ErrorCtx(c.ctx, err, "could not stop server")
 			}
 		})
-		return server
+		return mSrv
 	})
 }
 
-func (c *Container) GetPostgres() *pgxpool.Pool {
-	return get(&c.dbPool, func() *pgxpool.Pool {
-		dbPool, err := postgres.NewPostgres(c.ctx, c.cfg)
-		if err != nil {
-			c.GetLogger().ErrorCtx(c.ctx, err, "Failed to initialize PostgreSQL")
-		}
-		c.addCloseFn(func() { dbPool.Close() })
-		return dbPool
+func (c *Container) GetRepository() *repository.Repository {
+	return get(&c.repo, func() *repository.Repository {
+		return repository.New()
+	})
+}
+
+func (c *Container) GetUseCase() *usecase.UseCase {
+	return get(&c.useCase, func() *usecase.UseCase {
+		return usecase.NewUseCase(c.GetRepository())
+	})
+}
+
+func (c *Container) GetQuoteHandler() *handlers.GetQuoteHandler {
+	return get(&c.handler, func() *handlers.GetQuoteHandler {
+		return handlers.NewGetQuoteHandler(
+			c.GetLogger(),
+			c.GetMetricsRegistry(),
+			c.GetUseCase(),
+			c.GetConfig().POW.Complexity,
+			c.GetConfig().POW.Prefix,
+		)
+	})
+}
+
+func (c *Container) GetServer() *server.Server {
+	return get(&c.server, func() *server.Server {
+		return server.NewServer(
+			c.GetConfig().TCPServer.Port,
+			c.GetLogger(),
+			c.GetQuoteHandler(),
+		)
 	})
 }
 

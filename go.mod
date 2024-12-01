@@ -1,4 +1,4 @@
-module github.com/yusupovanton/go-service-template
+module github.com/yusupovanton/words-of-wisdom-POW
 
 go 1.23.2
 

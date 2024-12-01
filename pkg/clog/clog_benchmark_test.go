@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yusupovanton/go-service-template/internal/config"
-	"github.com/yusupovanton/go-service-template/pkg/clog"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/config"
+	"github.com/yusupovanton/words-of-wisdom-POW/pkg/clog"
 )
 
 func BenchmarkCustomLogger(b *testing.B) {

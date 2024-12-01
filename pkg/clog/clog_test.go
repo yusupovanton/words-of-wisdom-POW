@@ -12,8 +12,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/yusupovanton/go-service-template/internal/config"
-	"github.com/yusupovanton/go-service-template/pkg/clog"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/config"
+	"github.com/yusupovanton/words-of-wisdom-POW/pkg/clog"
 )
 
 const msgKey = "msg"

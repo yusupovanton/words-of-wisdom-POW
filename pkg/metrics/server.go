@@ -9,8 +9,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/yusupovanton/go-service-template/internal/config"
-	"github.com/yusupovanton/go-service-template/pkg/clog"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/config"
+	"github.com/yusupovanton/words-of-wisdom-POW/pkg/clog"
 )
 
 const (

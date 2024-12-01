@@ -8,7 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 
-	"github.com/yusupovanton/go-service-template/internal/config"
+	"github.com/yusupovanton/words-of-wisdom-POW/internal/config"
 )
 
 type registry struct {

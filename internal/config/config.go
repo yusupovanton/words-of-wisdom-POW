@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"os"
 	"strconv"
-	"time"
 )
 
 const (
@@ -15,10 +14,15 @@ const (
 )
 
 type Config struct {
-	DBConfig *DBConfig
-	Metrics  *Metrics
-	Log      *Log
-	Env      string
+	Metrics   *Metrics
+	Log       *Log
+	Env       string
+	TCPServer *TCPServer
+	POW       *POW
+}
+
+type TCPServer struct {
+	Port string
 }
 
 type Log struct {
@@ -27,13 +31,9 @@ type Log struct {
 	AddSource bool
 }
 
-type Client struct {
-	Address string
-	Timeout time.Duration
-}
-
-type DBConfig struct {
-	Conn string
+type POW struct {
+	Complexity int
+	Prefix     string
 }
 
 type Metrics struct {
@@ -44,8 +44,8 @@ type Metrics struct {
 
 func MustNew() Config {
 	return Config{
-		DBConfig: &DBConfig{
-			Conn: mustGetEnv("PG_CONN_STRING"),
+		TCPServer: &TCPServer{
+			Port: mustGetEnv("TCP_SERVER_PORT"),
 		},
 		Metrics: &Metrics{
 			Address:   mustGetEnv("METRICS_ADDRESS"),
@@ -57,7 +57,11 @@ func MustNew() Config {
 			Dest:      mustGetDestFromEnv("LOG_DEST"),
 			AddSource: mustGetBoolFromEnv("LOG_ADD_SOURCE"),
 		},
-		Env: os.Getenv("APP_ENVIRONMENT"),
+		Env: mustGetEnv("APP_ENVIRONMENT"),
+		POW: &POW{
+			Complexity: mustGetIntFromEnv("POW_COMPLEXITY"),
+			Prefix:     mustGetEnv("POW_PREFIX"),
+		},
 	}
 }
 
@@ -74,17 +78,6 @@ func mustGetEnv(key string) string {
 	if v == "" {
 		panic(fmt.Sprintf("env variable %s must be set", key))
 	}
-	return v
-}
-
-func mustGetDurationFromEnv(key string) time.Duration {
-	s := mustGetEnv(key)
-
-	v, err := time.ParseDuration(s)
-	if err != nil {
-		panic(fmt.Sprintf("'%v' value is not a duration", key))
-	}
-
 	return v
 }
 
@@ -128,6 +121,17 @@ func mustGetDestFromEnv(key string) io.Writer {
 	case "stderr":
 		return os.Stderr
 	default:
-		return os.Stdout
+		panic(fmt.Sprintf("'%v' is not a valid log destination", key))
 	}
+}
+
+func mustGetIntFromEnv(key string) int {
+	s := mustGetEnv(key)
+
+	v, err := strconv.Atoi(s)
+	if err != nil {
+		panic(fmt.Sprintf("'%v' value is not an integer", key))
+	}
+
+	return v
 }
