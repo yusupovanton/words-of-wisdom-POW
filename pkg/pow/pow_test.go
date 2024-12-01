@@ -3,7 +3,6 @@ package pow_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/pow"
@@ -13,51 +12,51 @@ type PowTestSuite struct {
 	suite.Suite
 }
 
-func (suite *PowTestSuite) TestGenerateChallenge() {
+func (s *PowTestSuite) TestGenerateChallenge() {
 	challenge, err := pow.GenerateChallenge("test", 4)
-	assert.NoError(suite.T(), err)
-	assert.NotNil(suite.T(), challenge)
-	assert.Equal(suite.T(), "test", challenge.Prefix)
-	assert.Equal(suite.T(), 4, challenge.Difficulty)
+	s.Require().NoError(err)
+	s.NotNil(challenge)
+	s.Equal("test", challenge.Prefix)
+	s.Equal(4, challenge.Difficulty)
 
 	challenge, err = pow.GenerateChallenge("test", 0)
-	assert.Error(suite.T(), err)
-	assert.Nil(suite.T(), challenge)
+	s.Require().Error(err)
+	s.Nil(challenge)
 }
 
-func (suite *PowTestSuite) TestCheckSolution() {
+func (s *PowTestSuite) TestCheckSolution() {
 	challenge, err := pow.GenerateChallenge("test", 4)
-	assert.NoError(suite.T(), err)
+	s.Require().NoError(err)
 
 	challenge.Prefix = ""
 	valid, err := challenge.CheckSolution("1234")
-	assert.Error(suite.T(), err)
-	assert.False(suite.T(), valid)
+	s.Require().Error(err)
+	s.False(valid)
 
 	challenge.Prefix = "test"
 	solution, err := challenge.FindSolution()
-	assert.NoError(suite.T(), err)
+	s.Require().NoError(err)
 
 	valid, err = challenge.CheckSolution(solution)
-	assert.NoError(suite.T(), err)
-	assert.True(suite.T(), valid)
+	s.Require().NoError(err)
+	s.True(valid)
 
 	valid, err = challenge.CheckSolution("wrong_nonce")
-	assert.NoError(suite.T(), err)
-	assert.False(suite.T(), valid)
+	s.Require().NoError(err)
+	s.False(valid)
 }
 
-func (suite *PowTestSuite) TestFindSolution() {
+func (s *PowTestSuite) TestFindSolution() {
 	challenge, err := pow.GenerateChallenge("test", 4)
-	assert.NoError(suite.T(), err)
+	s.Require().NoError(err)
 
 	solution, err := challenge.FindSolution()
-	assert.NoError(suite.T(), err)
-	assert.NotEmpty(suite.T(), solution)
+	s.Require().NoError(err)
+	s.NotEmpty(solution)
 
 	valid, err := challenge.CheckSolution(solution)
-	assert.NoError(suite.T(), err)
-	assert.True(suite.T(), valid)
+	s.Require().NoError(err)
+	s.True(valid)
 }
 
 func TestPowTestSuite(t *testing.T) {

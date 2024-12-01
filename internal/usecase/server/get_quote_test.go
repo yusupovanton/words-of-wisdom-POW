@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+
 	"github.com/yusupovanton/words-of-wisdom-POW/internal/usecase/server"
 	"github.com/yusupovanton/words-of-wisdom-POW/internal/usecase/server/mocks"
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/clog"

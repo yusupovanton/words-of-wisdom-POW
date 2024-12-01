@@ -1,8 +1,7 @@
 package repository
 
 // Repository provides methods to access quotes.
-type Repository struct {
-}
+type Repository struct{}
 
 // New creates a new Repository instance.
 func New() *Repository {

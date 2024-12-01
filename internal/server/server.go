@@ -3,17 +3,15 @@ package server
 import (
 	"context"
 	"fmt"
+	"net"
+
 	"github.com/yusupovanton/words-of-wisdom-POW/internal/handlers"
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/clog"
-	"github.com/yusupovanton/words-of-wisdom-POW/pkg/metrics"
-	"net"
 )
 
 type Server struct {
-	port     string
-	logger   clog.CLog
-	registry metrics.Registry
-	series   metrics.Series
+	port   string
+	logger clog.CLog
 
 	getQuoteHandler *handlers.GetQuoteHandler
 }

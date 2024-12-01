@@ -6,15 +6,15 @@ import (
 	"math/big"
 )
 
-func RandomInt(min, max int) (int, error) {
-	if min > max {
+func RandomInt(s1, s2 int) (int, error) {
+	if s1 > s2 {
 		return 0, errors.New("min must be less than or equal to max")
 	}
 
-	n, err := rand.Int(rand.Reader, big.NewInt(int64(max-min+1)))
+	n, err := rand.Int(rand.Reader, big.NewInt(int64(s2-s1+1)))
 	if err != nil {
 		return 0, err
 	}
 
-	return min + int(n.Int64()), nil
+	return s1 + int(n.Int64()), nil
 }

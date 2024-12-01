@@ -33,14 +33,14 @@ type GetQuoteHandler struct {
 	Prefix     string
 }
 
-func NewGetQuoteHandler(logger clog.CLog, registry metrics.Registry, quoteGetter quoteGetter, Difficulty int, Prefix string) *GetQuoteHandler {
+func NewGetQuoteHandler(logger clog.CLog, registry metrics.Registry, quoteGetter quoteGetter, difficulty int, prefix string) *GetQuoteHandler {
 	return &GetQuoteHandler{
 		logger:      logger,
 		registry:    registry,
 		series:      metrics.NewSeries(metrics.SeriesTypeApiHandler, "get_quote"),
 		quoteGetter: quoteGetter,
-		Difficulty:  Difficulty,
-		Prefix:      Prefix,
+		Difficulty:  difficulty,
+		Prefix:      prefix,
 	}
 }
 

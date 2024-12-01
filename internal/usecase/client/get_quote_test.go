@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/yusupovanton/words-of-wisdom-POW/internal/usecase/client"
+	usecase "github.com/yusupovanton/words-of-wisdom-POW/internal/usecase/client"
 	"github.com/yusupovanton/words-of-wisdom-POW/internal/usecase/client/mocks"
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/clog"
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/metrics"

@@ -49,6 +49,7 @@ func NewContainer(ctx context.Context) *Container {
 }
 
 func (c *Container) GetConfig() config.Config {
+	//nolint:gocritic // i dont want to unlambda
 	return get(&c.cfg, func() config.Config {
 		return config.MustNew()
 	})
@@ -79,6 +80,7 @@ func (c *Container) GetMetricsServer() metrics.Server {
 }
 
 func (c *Container) GetRepository() *repository.Repository {
+	//nolint:gocritic // i dont want to unlambda
 	return get(&c.repo, func() *repository.Repository {
 		return repository.New()
 	})

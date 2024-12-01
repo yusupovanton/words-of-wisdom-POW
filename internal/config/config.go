@@ -146,6 +146,7 @@ func mustGetIntFromEnv(key string) int {
 
 	return v
 }
+
 func mustGetDurationFromEnv(key string) time.Duration {
 	s := mustGetEnv(key)
 
