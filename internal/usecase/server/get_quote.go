@@ -1,4 +1,4 @@
-package usecase
+package server
 
 import (
 	randomChoice "github.com/yusupovanton/words-of-wisdom-POW/pkg/random_choice"

@@ -8,7 +8,9 @@ import (
 	"github.com/yusupovanton/words-of-wisdom-POW/internal/handlers"
 	"github.com/yusupovanton/words-of-wisdom-POW/internal/repository"
 	"github.com/yusupovanton/words-of-wisdom-POW/internal/server"
-	"github.com/yusupovanton/words-of-wisdom-POW/internal/usecase"
+	clientUsecase "github.com/yusupovanton/words-of-wisdom-POW/internal/usecase/client"
+	serverUsecase "github.com/yusupovanton/words-of-wisdom-POW/internal/usecase/server"
+	quotePOWServer "github.com/yusupovanton/words-of-wisdom-POW/pkg/clients/quote_pow_server"
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/clog"
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/metrics"
 )
@@ -21,10 +23,13 @@ type Container struct {
 	metricsServer metrics.Server
 	registry      metrics.Registry
 
-	repo    *repository.Repository
-	useCase *usecase.UseCase
-	handler *handlers.GetQuoteHandler
-	server  *server.Server
+	repo          *repository.Repository
+	serverUseCase *serverUsecase.UseCase
+	handler       *handlers.GetQuoteHandler
+	server        *server.Server
+
+	clientUseCase *clientUsecase.QuoteUseCase
+	client        *quotePOWServer.Client
 
 	closeFns []func()
 }
@@ -79,9 +84,9 @@ func (c *Container) GetRepository() *repository.Repository {
 	})
 }
 
-func (c *Container) GetUseCase() *usecase.UseCase {
-	return get(&c.useCase, func() *usecase.UseCase {
-		return usecase.NewUseCase(c.GetRepository())
+func (c *Container) GetServerUseCase() *serverUsecase.UseCase {
+	return get(&c.serverUseCase, func() *serverUsecase.UseCase {
+		return serverUsecase.NewUseCase(c.GetRepository())
 	})
 }
 
@@ -90,7 +95,7 @@ func (c *Container) GetQuoteHandler() *handlers.GetQuoteHandler {
 		return handlers.NewGetQuoteHandler(
 			c.GetLogger(),
 			c.GetMetricsRegistry(),
-			c.GetUseCase(),
+			c.GetServerUseCase(),
 			c.GetConfig().POW.Complexity,
 			c.GetConfig().POW.Prefix,
 		)
@@ -121,6 +126,31 @@ func (c *Container) Close() {
 		}(fn)
 	}
 	wg.Wait()
+}
+
+func (c *Container) GetPOWServerClient() *quotePOWServer.Client {
+	return get(&c.client, func() *quotePOWServer.Client {
+		cl, err := quotePOWServer.NewClient(c.GetConfig().TCPServer.Port)
+		if err != nil {
+			c.GetLogger().ErrorCtx(c.ctx, err, "could not initialize client")
+		}
+		c.addCloseFn(func() {
+			if err := cl.Close(); err != nil {
+				c.GetLogger().ErrorCtx(c.ctx, err, "could not close client")
+			}
+		})
+		return cl
+	})
+}
+
+func (c *Container) GetClientUseCase() *clientUsecase.QuoteUseCase {
+	return get(&c.clientUseCase, func() *clientUsecase.QuoteUseCase {
+		return clientUsecase.NewQuoteUseCase(
+			c.GetPOWServerClient(),
+			c.GetLogger(),
+			c.GetMetricsRegistry(),
+		)
+	})
 }
 
 func get[T comparable](obj *T, builder func() T) T {
