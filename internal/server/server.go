@@ -51,6 +51,6 @@ func (s *Server) Run(ctx context.Context) error {
 			continue
 		}
 
-		go s.getQuoteHandler.GetQuote(conn)
+		go s.getQuoteHandler.GetQuote(ctx, conn)
 	}
 }

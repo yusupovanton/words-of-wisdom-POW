@@ -86,7 +86,7 @@ func (c *Container) GetRepository() *repository.Repository {
 
 func (c *Container) GetServerUseCase() *serverUsecase.UseCase {
 	return get(&c.serverUseCase, func() *serverUsecase.UseCase {
-		return serverUsecase.NewUseCase(c.GetRepository())
+		return serverUsecase.NewUseCase(c.GetRepository(), c.GetMetricsRegistry())
 	})
 }
 
@@ -130,7 +130,7 @@ func (c *Container) Close() {
 
 func (c *Container) GetPOWServerClient() *quotePOWServer.Client {
 	return get(&c.client, func() *quotePOWServer.Client {
-		return quotePOWServer.NewClient(c.GetConfig().TCPServer.Port, c.GetLogger())
+		return quotePOWServer.NewClient(c.GetConfig().TCPServer.Port, c.GetLogger(), c.GetMetricsRegistry())
 	})
 }
 

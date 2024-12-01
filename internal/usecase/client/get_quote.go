@@ -34,9 +34,11 @@ func (uc *QuoteUseCase) FetchQuote(ctx context.Context) error {
 	quote, err := uc.client.GetQuote(ctx)
 	if err != nil {
 		uc.registry.Inc(series.Error("get_quote"))
+		uc.logger.ErrorCtx(ctx, err, "Failed to get quote")
 		return fmt.Errorf("failed to get quote: %w", err)
 	}
-	uc.logger.InfoCtx(ctx, "Quote", "quote", quote)
+
+	uc.logger.InfoCtx(ctx, fmt.Sprintf("fetched quote successfully: %s", quote))
 	uc.registry.Inc(series.Success())
 	return nil
 }
