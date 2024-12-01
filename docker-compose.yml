@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
     volumes:
-      - .env:/app/.env
+      - .env.docker:/app/.env
     networks:
       - words-of-wisdom-network
     restart: always
@@ -26,7 +26,7 @@ services:
     env_file:
       - .env
     volumes:
-      - .env:/app/.env
+      - .env.docker:/app/.env
     networks:
       - words-of-wisdom-network
     restart: always
