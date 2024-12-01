@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16.2
+    ports:
+      - "54032:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: case_tracker
+    networks:
+      - surge-signal-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  case-tracker-network:
+    driver: bridge
+    external: true
+    attachable: true
+
+volumes:
+  postgres_data:
