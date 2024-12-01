@@ -21,8 +21,8 @@ type Client struct {
 	series   metrics.Series
 }
 
-func NewClient(port string, logger clog.CLog, registry metrics.Registry) *Client {
-	address := fmt.Sprintf("localhost:%s", port)
+func NewClient(host, port string, logger clog.CLog, registry metrics.Registry) *Client {
+	address := fmt.Sprintf("%s:%s", host, port)
 	return &Client{
 		address:  address,
 		logger:   logger,

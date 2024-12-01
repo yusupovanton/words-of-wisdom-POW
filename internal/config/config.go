@@ -24,6 +24,7 @@ type Config struct {
 }
 
 type TCPServer struct {
+	Host string
 	Port string
 }
 
@@ -51,6 +52,7 @@ type Metrics struct {
 func MustNew() Config {
 	return Config{
 		TCPServer: &TCPServer{
+			Host: mustGetEnv("TCP_SERVER_HOST"),
 			Port: mustGetEnv("TCP_SERVER_PORT"),
 		},
 		Metrics: &Metrics{

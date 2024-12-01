@@ -1,22 +1,36 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:16.2
+  words-of-wisdom-server:
+    build:
+      context: .
+      dockerfile: server.Dockerfile
+    container_name: words-of-wisdom-server
     ports:
-      - "54032:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: words_of_wisdom_POW
-    networks:
-      - words-of-wisdom-POW-network
+      - "8080:8080"
+    env_file:
+      - .env
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - .env:/app/.env
+    networks:
+      - words-of-wisdom-network
+    restart: always
+
+  words-of-wisdom-client:
+    build:
+      context: .
+      dockerfile: client.Dockerfile
+    container_name: words-of-wisdom-client
+    depends_on:
+      - words-of-wisdom-server
+    env_file:
+      - .env
+    volumes:
+      - .env:/app/.env
+    networks:
+      - words-of-wisdom-network
+    restart: always
 
 networks:
-  words-of-wisdom-POW-network:
-    external: true
-
-volumes:
-  postgres_data:
+  words-of-wisdom-network:
+    driver: bridge
