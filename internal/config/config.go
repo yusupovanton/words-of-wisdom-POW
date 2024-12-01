@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"strconv"
+	"time"
 )
 
 const (
@@ -18,6 +19,7 @@ type Config struct {
 	Log       *Log
 	Env       string
 	TCPServer *TCPServer
+	Client    *Client
 	POW       *POW
 }
 
@@ -36,6 +38,10 @@ type POW struct {
 	Prefix     string
 }
 
+type Client struct {
+	Interval time.Duration
+}
+
 type Metrics struct {
 	Address   string
 	Subsystem string
@@ -51,6 +57,9 @@ func MustNew() Config {
 			Address:   mustGetEnv("METRICS_ADDRESS"),
 			Namespace: mustGetEnv("METRICS_NAMESPACE"),
 			Subsystem: mustGetEnv("METRICS_SUBSYSTEM"),
+		},
+		Client: &Client{
+			Interval: mustGetDurationFromEnv("CLIENT_FETCH_INTERVAL"),
 		},
 		Log: &Log{
 			Level:     mustGetLogLevelFromEnv("LOG_LEVEL"),
@@ -131,6 +140,16 @@ func mustGetIntFromEnv(key string) int {
 	v, err := strconv.Atoi(s)
 	if err != nil {
 		panic(fmt.Sprintf("'%v' value is not an integer", key))
+	}
+
+	return v
+}
+func mustGetDurationFromEnv(key string) time.Duration {
+	s := mustGetEnv(key)
+
+	v, err := time.ParseDuration(s)
+	if err != nil {
+		panic(fmt.Sprintf("'%v' value is not a duration", key))
 	}
 
 	return v

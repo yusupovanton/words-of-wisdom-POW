@@ -130,16 +130,7 @@ func (c *Container) Close() {
 
 func (c *Container) GetPOWServerClient() *quotePOWServer.Client {
 	return get(&c.client, func() *quotePOWServer.Client {
-		cl, err := quotePOWServer.NewClient(c.GetConfig().TCPServer.Port)
-		if err != nil {
-			c.GetLogger().ErrorCtx(c.ctx, err, "could not initialize client")
-		}
-		c.addCloseFn(func() {
-			if err := cl.Close(); err != nil {
-				c.GetLogger().ErrorCtx(c.ctx, err, "could not close client")
-			}
-		})
-		return cl
+		return quotePOWServer.NewClient(c.GetConfig().TCPServer.Port, c.GetLogger())
 	})
 }
 
