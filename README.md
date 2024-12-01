@@ -134,3 +134,16 @@ Here’s a summary of available `make` commands:
 
 1. Ensure you have the `.env` file in the project root before running the service locally or in Docker.
 2. For Docker Compose, the `.env` file will be mounted into the container and used during runtime.
+
+## Why This Specific PoW Algorithm?
+This PoW algorithm was chosen for its simplicity and practicality:
+
+Hash-Based: It relies on SHA-256, a widely-used and secure hashing function. This makes the algorithm easy to understand, implement, and verify.
+
+Dynamic Difficulty: The difficulty level is represented by the number of leading zeros required in the hash, making it straightforward to adjust based on server needs or workload.
+
+Efficient Validation: The server only checks the hash against the required difficulty, which is computationally inexpensive compared to generating a hash.
+
+Compatibility: It works well with low-resource systems and is adaptable for scenarios where clients may have varied computational capabilities.
+
+Educational Value: It's a simple yet effective demonstration of PoW concepts used in more complex systems like Bitcoin, without adding unnecessary complexity.
