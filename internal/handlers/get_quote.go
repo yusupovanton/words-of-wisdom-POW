@@ -12,8 +12,14 @@ import (
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/pow"
 )
 
+//go:generate ../../bin/mockery --name quoteGetter
 type quoteGetter interface {
 	GetRandomQuote(ctx context.Context) (string, error)
+}
+
+//go:generate ../../bin/mockery --name conn
+type conn interface {
+	net.Conn
 }
 
 type GetQuoteHandler struct {
@@ -38,7 +44,7 @@ func NewGetQuoteHandler(logger clog.CLog, registry metrics.Registry, quoteGetter
 	}
 }
 
-func (h *GetQuoteHandler) GetQuote(ctx context.Context, conn net.Conn) {
+func (h *GetQuoteHandler) GetQuote(ctx context.Context, conn conn) {
 	ctx, series := h.series.WithOperation(ctx, "get_quote")
 	defer func() {
 		if err := conn.Close(); err != nil {

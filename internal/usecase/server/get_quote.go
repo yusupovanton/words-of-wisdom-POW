@@ -8,6 +8,7 @@ import (
 	randomChoice "github.com/yusupovanton/words-of-wisdom-POW/pkg/random_choice"
 )
 
+//go:generate ../../../bin/mockery --name storage
 type storage interface {
 	GetQuoteByID(id int) (string, error)
 	QuotesLength() int
@@ -22,8 +23,9 @@ type UseCase struct {
 }
 
 // NewUseCase creates a new instance of UseCase with the given storage and metrics registry.
-func NewUseCase(storage storage, registry metrics.Registry) *UseCase {
+func NewUseCase(logger clog.CLog, storage storage, registry metrics.Registry) *UseCase {
 	return &UseCase{
+		logger:   logger,
 		storage:  storage,
 		registry: registry,
 		series:   metrics.NewSeries(metrics.SeriesTypeUseCase, "get_random_quote"),

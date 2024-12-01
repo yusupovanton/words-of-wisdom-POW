@@ -8,6 +8,7 @@ import (
 	"github.com/yusupovanton/words-of-wisdom-POW/pkg/metrics"
 )
 
+//go:generate ../../../bin/mockery --name quoteGetterClient
 type quoteGetterClient interface {
 	GetQuote(ctx context.Context) (string, error)
 }
